@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "connectionInfo": "App registration: PillarUtils, Tenant: Pillar To Post LLC (pillarvid.tv - Microsoft Entra ID)",
+      "type": "identityapp.default"
+    }
+  }
+}

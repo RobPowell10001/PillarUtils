@@ -1,0 +1,97 @@
+﻿@model PillarUtils.Models.ArchiveItem
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>ArchiveItem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FolderName" class="control-label"></label>
+                <input asp-for="FolderName" class="form-control" />
+                <span asp-validation-for="FolderName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImportSourcePath" class="control-label"></label>
+                <input asp-for="ImportSourcePath" class="form-control" />
+                <span asp-validation-for="ImportSourcePath" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileFormat" class="control-label"></label>
+                <input asp-for="FileFormat" class="form-control" />
+                <span asp-validation-for="FileFormat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SourceDate" class="control-label"></label>
+                <input asp-for="SourceDate" class="form-control" />
+                <span asp-validation-for="SourceDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="FileChecked" /> @Html.DisplayNameFor(model => model.FileChecked)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="NotificationSent" /> @Html.DisplayNameFor(model => model.NotificationSent)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="RenewalDate" class="control-label"></label>
+                <input asp-for="RenewalDate" class="form-control" />
+                <span asp-validation-for="RenewalDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ReadyToDelete" /> @Html.DisplayNameFor(model => model.ReadyToDelete)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="isDeleted" /> @Html.DisplayNameFor(model => model.isDeleted)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Format" class="control-label"></label>
+                <input asp-for="Format" class="form-control" />
+                <span asp-validation-for="Format" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Codec" class="control-label"></label>
+                <input asp-for="Codec" class="form-control" />
+                <span asp-validation-for="Codec" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label"></label>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
