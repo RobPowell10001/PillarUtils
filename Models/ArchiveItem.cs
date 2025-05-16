@@ -26,16 +26,15 @@ namespace PillarUtils.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         [Required]
-        public string FolderName { get; set; } = string.Empty;
+        public string FolderName { get; set; } = string.Empty; //The lowest level directory this file is in
+        [Required]
+        public string DriveName { get; set; } = string.Empty; //The hard drive name this file is on, corresponds to a catDV catalog for import
         [Required]
         public string ImportSourcePath { get; set; } = string.Empty;
         [Required]
         public string FileFormat { get; set; } = string.Empty;
         [Required]
         public DateTime? SourceDate { get; set; } = null;
-        [ForeignKey("Client")]
-        public int ClientId { get; set; }
-        public Client? Client { get; set; } = null!;
         public bool FileChecked { get; set; } = false;
         public bool NotificationSent { get; set; } = false;
         public DateTime? RenewalDate { get; set; } = null;
@@ -44,7 +43,10 @@ namespace PillarUtils.Models
         public string Format {  get; set; } = string.Empty;
         public string Codec { get; set; } = string.Empty;
         public TimeSpan Duration { get; set; } = TimeSpan.Zero;
-        
+
+        [ForeignKey("Client")]
+        public int ClientId { get; set; }
+        public Client? Client { get; set; } = null!;
 
     }
 }

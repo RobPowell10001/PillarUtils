@@ -10,12 +10,9 @@ namespace PillarUtils.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         public string ClientCode { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
+        public IEnumerable<Contact>? Contacts { get; set; }
+        public IEnumerable<ArchiveItem>? ArchiveItems { get; set; }
 
-        public IEnumerable<ArchiveItem>? archiveItems { get; set; }
-
-        //Consider adding a Contact class se we can have a list of multiple contacts to a client
 
 
     }
