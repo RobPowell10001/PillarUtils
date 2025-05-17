@@ -1,4 +1,4 @@
-﻿@model PillarUtils.Models.ArchiveItem
+﻿@model ArchiveItem
 
 @{
     ViewData["Title"] = "Create";
@@ -23,6 +23,11 @@
                 <span asp-validation-for="FolderName" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="DriveName" class="control-label"></label>
+                <input asp-for="DriveName" class="form-control" />
+                <span asp-validation-for="DriveName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="ImportSourcePath" class="control-label"></label>
                 <input asp-for="ImportSourcePath" class="form-control" />
                 <span asp-validation-for="ImportSourcePath" class="text-danger"></span>
@@ -36,10 +41,6 @@
                 <label asp-for="SourceDate" class="control-label"></label>
                 <input asp-for="SourceDate" class="form-control" />
                 <span asp-validation-for="SourceDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -80,6 +81,10 @@
                 <label asp-for="Duration" class="control-label"></label>
                 <input asp-for="Duration" class="form-control" />
                 <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

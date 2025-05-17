@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PillarUtils.Models.ArchiveItem>
+﻿@model IEnumerable<ArchiveItem>
 
 @{
     ViewData["Title"] = "Index";
@@ -19,6 +19,9 @@
                 @Html.DisplayNameFor(model => model.FolderName)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.DriveName)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ImportSourcePath)
             </th>
             <th>
@@ -26,9 +29,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SourceDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FileChecked)
@@ -54,6 +54,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Duration)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Client)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -67,6 +70,9 @@
                 @Html.DisplayFor(modelItem => item.FolderName)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.DriveName)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.ImportSourcePath)
             </td>
             <td>
@@ -74,9 +80,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SourceDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FileChecked)
@@ -101,6 +104,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Client.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

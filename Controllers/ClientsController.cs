@@ -10,23 +10,22 @@ using PillarUtils.Models;
 
 namespace PillarUtils.Controllers
 {
-    public class ArchiveItemsController : Controller
+    public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ArchiveItemsController(ApplicationDbContext context)
+        public ClientsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: ArchiveItems
+        // GET: Clients
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.ArchiveItem.Include(a => a.Client);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.Client.ToListAsync());
         }
 
-        // GET: ArchiveItems/Details/5
+        // GET: Clients/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,42 +33,39 @@ namespace PillarUtils.Controllers
                 return NotFound();
             }
 
-            var archiveItem = await _context.ArchiveItem
-                .Include(a => a.Client)
+            var client = await _context.Client
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (archiveItem == null)
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(archiveItem);
+            return View(client);
         }
 
-        // GET: ArchiveItems/Create
+        // GET: Clients/Create
         public IActionResult Create()
         {
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name");
             return View();
         }
 
-        // POST: ArchiveItems/Create
+        // POST: Clients/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,FolderName,DriveName,ImportSourcePath,FileFormat,SourceDate,FileChecked,NotificationSent,RenewalDate,ReadyToDelete,isDeleted,Format,Codec,Duration,ClientId")] ArchiveItem archiveItem)
+        public async Task<IActionResult> Create([Bind("Id,Name,ClientCode")] Client client)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(archiveItem);
+                _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", archiveItem.ClientId);
-            return View(archiveItem);
+            return View(client);
         }
 
-        // GET: ArchiveItems/Edit/5
+        // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,23 +73,22 @@ namespace PillarUtils.Controllers
                 return NotFound();
             }
 
-            var archiveItem = await _context.ArchiveItem.FindAsync(id);
-            if (archiveItem == null)
+            var client = await _context.Client.FindAsync(id);
+            if (client == null)
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", archiveItem.ClientId);
-            return View(archiveItem);
+            return View(client);
         }
 
-        // POST: ArchiveItems/Edit/5
+        // POST: Clients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,FolderName,DriveName,ImportSourcePath,FileFormat,SourceDate,FileChecked,NotificationSent,RenewalDate,ReadyToDelete,isDeleted,Format,Codec,Duration,ClientId")] ArchiveItem archiveItem)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ClientCode")] Client client)
         {
-            if (id != archiveItem.Id)
+            if (id != client.Id)
             {
                 return NotFound();
             }
@@ -102,12 +97,12 @@ namespace PillarUtils.Controllers
             {
                 try
                 {
-                    _context.Update(archiveItem);
+                    _context.Update(client);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArchiveItemExists(archiveItem.Id))
+                    if (!ClientExists(client.Id))
                     {
                         return NotFound();
                     }
@@ -118,11 +113,10 @@ namespace PillarUtils.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", archiveItem.ClientId);
-            return View(archiveItem);
+            return View(client);
         }
 
-        // GET: ArchiveItems/Delete/5
+        // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,35 +124,34 @@ namespace PillarUtils.Controllers
                 return NotFound();
             }
 
-            var archiveItem = await _context.ArchiveItem
-                .Include(a => a.Client)
+            var client = await _context.Client
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (archiveItem == null)
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(archiveItem);
+            return View(client);
         }
 
-        // POST: ArchiveItems/Delete/5
+        // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var archiveItem = await _context.ArchiveItem.FindAsync(id);
-            if (archiveItem != null)
+            var client = await _context.Client.FindAsync(id);
+            if (client != null)
             {
-                _context.ArchiveItem.Remove(archiveItem);
+                _context.Client.Remove(client);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArchiveItemExists(int id)
+        private bool ClientExists(int id)
         {
-            return _context.ArchiveItem.Any(e => e.Id == id);
+            return _context.Client.Any(e => e.Id == id);
         }
     }
 }

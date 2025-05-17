@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PillarUtils.Models;
 
 namespace PillarUtils.Data
 {
@@ -10,7 +11,8 @@ namespace PillarUtils.Data
         {
         }
         //public DbSet<Tweedle.Models.Rule> Rule { get; set; } = default!;
-        public DbSet<PillarUtils.Models.ArchiveItem> ArchiveItem { get; set; } = default!;
-        public DbSet<PillarUtils.Models.Client> Client { get; set; } = default!;
+        public DbSet<ArchiveItem> ArchiveItem { get; set; } = default!;
+        public DbSet<Client> Client { get; set; } = default!;
+        public DbSet<Contact> Contact { get; set; } = default!;
     }
 }

@@ -1,4 +1,4 @@
-﻿@model PillarUtils.Models.ArchiveItem
+﻿@model ArchiveItem
 
 @{
     ViewData["Title"] = "Delete";
@@ -24,6 +24,12 @@
             @Html.DisplayFor(model => model.FolderName)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DriveName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DriveName)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ImportSourcePath)
         </dt>
         <dd class = "col-sm-10">
@@ -40,12 +46,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.SourceDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Client)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Client.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FileChecked)
@@ -94,6 +94,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Duration)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Client.Name)
         </dd>
     </dl>
     

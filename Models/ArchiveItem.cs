@@ -40,7 +40,7 @@ namespace PillarUtils.Models
         public DateTime? RenewalDate { get; set; } = null;
         public bool ReadyToDelete { get; set; } = false;
         public bool isDeleted { get; set; } = false;
-        public string Format {  get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
         public string Codec { get; set; } = string.Empty;
         public TimeSpan Duration { get; set; } = TimeSpan.Zero;
 

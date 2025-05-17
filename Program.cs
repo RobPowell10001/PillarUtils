@@ -49,6 +49,7 @@ namespace PillarUtils
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
