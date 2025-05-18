@@ -62,26 +62,59 @@ namespace PillarUtils.Controllers
             {
                 switch (ImportMode)
                 {
-                    case ExcelImportMode.ClientImport:
-                        var clientName = worksheet.Cell(row, 1).GetValue<string>();
-                        var clientCode = worksheet.Cell(row, 2).GetValue<string>();
-                        Client client = new Client();
-                        client.Name = clientName;
-                        client.ClientCode = clientCode;
-                        // Create and add to database a Client with the proper data
-                        if (ModelState.IsValid)
-                        {
-                            _context.Add(client);
-                            await _context.SaveChangesAsync();
-                        }
-                        Debug.WriteLine($"Client with: {clientName} | {clientCode} Added!");
+                    case ExcelImportMode.ClientImport: //disabled for safety
+                        //var clientName = worksheet.Cell(row, 1).GetValue<string>();
+                        //var clientCode = worksheet.Cell(row, 2).GetValue<string>();
+                        //Client client = new Client();
+                        //client.Name = clientName;
+                        //client.ClientCode = clientCode;
+                        //// Create and add to database a Client with the proper data
+                        //if (ModelState.IsValid)
+                        //{
+                        //    _context.Add(client);
+                        //    await _context.SaveChangesAsync();
+                        //}
+                        //Debug.WriteLine($"Client with: {clientName} | {clientCode} Added!");
                         break;
 
                     case ExcelImportMode.ContactImport:
-                        var contactName = worksheet.Cell(row, 1).GetValue<string>();
+                        //var avazaID = worksheet.Cell(row, 1).GetValue<string>();
+                        //var firstName = worksheet.Cell(row, 2).GetValue<string>();
+                        //var lastName = worksheet.Cell(row, 3).GetValue<string>();
+                        //var positionTitle = worksheet.Cell(row, 4).GetValue<string>();
+                        //var email = worksheet.Cell(row, 5).GetValue<string>();
+                        //var mobilePhone = worksheet.Cell(row, 6).GetValue<string>();
+                        //var phoneNumber = worksheet.Cell(row, 7).GetValue<string>();
+                        //var customerCode = worksheet.Cell(row, 8).GetValue<string>();
+                        //var billingAddress = worksheet.Cell(row, 10).GetValue<string>();
+                        ////Find Client by Client Code
+                        //Client contactClient = await _context.Client.FirstOrDefaultAsync(c => c.ClientCode == customerCode);
 
-                        // TODO: Save to DB
-                        Debug.WriteLine($"Contact: {contactName}");
+                        //if (contactClient == null)
+                        //{
+                        //    Debug.WriteLine($"Client with code {customerCode} not found.");
+                        //    continue; // or continue; depends on how you want to handle missing clients
+                        //}
+
+                        //// Create contact
+                        //Contact contact = new()
+                        //{
+                        //    FirstName = firstName,
+                        //    LastName = lastName,
+                        //    AvazaUserId = avazaID,
+                        //    JobTitle = positionTitle,
+                        //    Email = email,
+                        //    MobilePhone = mobilePhone,
+                        //    WorkPhone = phoneNumber,
+                        //    BillingAddress = billingAddress,
+                        //    Client = contactClient // you can also just set ClientId = contactClient.Id;
+                        //};
+
+                        //_context.Add(contact);
+                        //await _context.SaveChangesAsync();
+
+                        //// TODO: Save to DB
+                        //Debug.WriteLine($"Contact with : {firstName} {lastName} | {contactClient.ClientCode} Added!!!!!!");
                         break;
 
                     case ExcelImportMode.ArchiveItemImport:
