@@ -13,6 +13,8 @@ namespace PillarUtils.Controllers
     public class ArchiveItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private const int PageSize = 100; // set page size to 100
+
 
         public ArchiveItemsController(ApplicationDbContext context)
         {
@@ -20,10 +22,17 @@ namespace PillarUtils.Controllers
         }
 
         // GET: ArchiveItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, CancellationToken ct = default)
         {
-            var applicationDbContext = _context.ArchiveItem.Include(a => a.Client);
-            return View(await applicationDbContext.ToListAsync());
+            if (page < 1) page = 1;
+
+            var query = _context.ArchiveItem
+                .AsNoTracking()
+                .OrderByDescending(a => a.SourceDate) // ensure deterministic order
+                .ThenBy(a => a.Id);
+
+            var model = await PaginatedList<ArchiveItem>.CreateAsync(query, page, PageSize, ct);
+            return View(model);
         }
 
         // GET: ArchiveItems/Details/5

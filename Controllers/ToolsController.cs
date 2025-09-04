@@ -33,6 +33,17 @@ namespace PillarUtils.Controllers
             return View();
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteAllArchiveItems()
+        //{
+        //    await using var tx = await _context.Database.BeginTransactionAsync();
+
+        //    await _context.ArchiveItem.ExecuteDeleteAsync();  // DELETE FROM [ArchiveItems]
+
+        //    await tx.CommitAsync();
+        //    return RedirectToAction("Index");
+        //}
+
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile ExcelFile, int ImportModeInt)
         {
@@ -118,9 +129,67 @@ namespace PillarUtils.Controllers
                         break;
 
                     case ExcelImportMode.ArchiveItemImport:
-                        var archiveTitle = worksheet.Cell(row, 1).GetValue<string>();
+                        var name = worksheet.Cell(row, 1).GetValue<string>(); //good
+                        var archiveClientCode = worksheet.Cell(row, 2).GetValue<string>(); //good
+                        var sourcePath = worksheet.Cell(row, 3).GetValue<string>();
+                        var sourceDate = worksheet.Cell(row, 4).GetValue<string>();
+                        var format = worksheet.Cell(row, 5).GetValue<string>();
+                        var duration = worksheet.Cell(row, 6).GetValue<string>();
+                        var codec = worksheet.Cell(row, 7).GetValue<string>();
+                        var driveName = worksheet.Cell(row, 8).GetValue<string>();
+                        var renewalDate = worksheet.Cell(row, 13).GetValue<string>();
+                        var fileFormat = worksheet.Cell(row, 15).GetValue<string>();
+                        var fileChecked = false;
+                        var notificationSent = false;
+                        var readToDelete = false;
+                        var isDeleted = false;
+
+                        //folder name is the last part of the source path
+                        var folderName = string.Empty;
+                        for (int i = sourcePath.Length - 1; i >= 0; i--)
+                        {
+                            if (sourcePath[i] == '\\' || sourcePath[i] == '/')
+                            {
+                                folderName = sourcePath[(i + 1)..];
+                                break;
+                            }
+                        }
+
+
+                        ////Find Client by Client Code
+                        Client archiveClient = await _context.Client.FirstOrDefaultAsync(c => c.ClientCode == archiveClientCode);
+
+                        if (archiveClient == null)
+                        {
+                            Debug.WriteLine($"Client with code {archiveClientCode} not found.");
+                            continue; // or continue; depends on how you want to handle missing clients
+                        }
+
+                        ////Create Archive Item
+                        ArchiveItem archiveItem = new()
+                        {
+                            Name = name,
+                            FolderName = folderName,
+                            DriveName = driveName,
+                            ImportSourcePath = sourcePath,
+                            FileFormat = fileFormat,
+                            SourceDate = DateTime.TryParse(sourceDate, out DateTime parsedSourceDate) ? parsedSourceDate : null,
+                            FileChecked = fileChecked,
+                            NotificationSent = notificationSent,
+                            RenewalDate = DateTime.TryParse(renewalDate, out DateTime parsedRenewalDate) ? parsedRenewalDate : null,
+                            ReadyToDelete = readToDelete,
+                            isDeleted = isDeleted,
+                            Format = format,
+                            Codec = codec,
+                            Duration = duration,
+                            Client = archiveClient // you can also just set ClientId = archiveClient.Id;
+                        };
+
+                        Debug.WriteLine($"Imported: {name}");
+                        Debug.WriteLine($" | {archiveClient.ClientCode} | {sourcePath} | {folderName} | {sourceDate} | {format} | {duration} | {codec} | {driveName} | {renewalDate} | {fileFormat}");
                         // TODO: Save to DB
-                        Debug.WriteLine($"Archive: {archiveTitle}");
+                        _context.Add(archiveItem);
+                        await _context.SaveChangesAsync();
                         break;
 
                     default:

@@ -25,6 +25,16 @@ namespace PillarUtils.Controllers
             return View(await _context.Client.ToListAsync());
         }
 
+        public async Task<IActionResult> RenewalList()
+        {
+            var clientsWithOverdueItems = await _context.Client
+                .Where(c => c.ArchiveItems.Any(ai => ai.RenewalDate <= DateTime.Now))
+                .Include(c => c.ArchiveItems.Where(ai => ai.RenewalDate <= DateTime.Now))
+                .AsNoTracking()
+                .ToListAsync();
+            return View(clientsWithOverdueItems);
+        }
+
         // GET: Clients/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -34,7 +44,32 @@ namespace PillarUtils.Controllers
             }
 
             var client = await _context.Client
+                .Include(c => c.ArchiveItems)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return View(client);
+        }
+
+        public async Task<IActionResult> Notify(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = await _context.Client
+                .Where(c => c.ArchiveItems.Any(ai => ai.RenewalDate <= DateTime.Now))
+                .Include(c => c.ArchiveItems.Where(ai => ai.RenewalDate <= DateTime.Now))
+                .Include(c => c.Contacts)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (client == null)
             {
                 return NotFound();

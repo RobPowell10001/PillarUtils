@@ -42,7 +42,7 @@ namespace PillarUtils.Models
         public bool isDeleted { get; set; } = false;
         public string Format { get; set; } = string.Empty;
         public string Codec { get; set; } = string.Empty;
-        public TimeSpan Duration { get; set; } = TimeSpan.Zero;
+        public string Duration { get; set; } = string.Empty;
 
         [ForeignKey("Client")]
         public int ClientId { get; set; }

@@ -1,17 +1,11 @@
 ﻿@model IEnumerable<Client>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "RenewalList";
 }
 
-<h1>Index</h1>
+<h1>Clients with 1 or more items past their renewal date:</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<p>
-    <a asp-action="RenewalList">Clients with overdue items</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -20,6 +14,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ClientCode)
+            </th>
+            <th>
+                Number Overdue
             </th>
             <th></th>
         </tr>
@@ -34,9 +31,11 @@
                 @Html.DisplayFor(modelItem => item.ClientCode)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                @(item.ArchiveItems != null ? item.ArchiveItems.Count() : 0)
+            </td>
+            <td>
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Notify" asp-route-id="@item.Id">Notify</a>
             </td>
         </tr>
 }
