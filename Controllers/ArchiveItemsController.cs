@@ -92,6 +92,8 @@ namespace PillarUtils.Controllers
                 return NotFound();
             }
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", archiveItem.ClientId);
+
+            ViewBag.ReturnUrl = Request.Headers["Referer"].ToString();
             return View(archiveItem);
         }
 
@@ -100,7 +102,7 @@ namespace PillarUtils.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,FolderName,DriveName,ImportSourcePath,FileFormat,SourceDate,FileChecked,NotificationSent,RenewalDate,ReadyToDelete,isDeleted,Format,Codec,Duration,ClientId")] ArchiveItem archiveItem)
+        public async Task<IActionResult> Edit(int id, string returnUrl, [Bind("Id,Name,FolderName,DriveName,ImportSourcePath,FileFormat,SourceDate,FileChecked,NotificationSent,NotificationDate,RenewalDate,ReadyToDelete,isDeleted,Format,Codec,Duration,ClientId")] ArchiveItem archiveItem)
         {
             if (id != archiveItem.Id)
             {
@@ -124,6 +126,11 @@ namespace PillarUtils.Controllers
                     {
                         throw;
                     }
+                }
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
                 }
                 return RedirectToAction(nameof(Index));
             }

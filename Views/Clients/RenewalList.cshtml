@@ -1,19 +1,62 @@
-﻿@model IEnumerable<Client>
+﻿@model RenewalListModel
 
 @{
     ViewData["Title"] = "RenewalList";
 }
 
-<h1>Clients with 1 or more items past their renewal date:</h1>
+@{
+    if (Model.clientsWithOldNotifications.Count() > 0)
+    {
+        <h2>Clients with Notifications over 1 month old:</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Client Name
+                    </th>
+                    <th>
+                        Client Code
+                    </th>
+                    <th>
+                        Number of Old Notifications
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.clientsWithOldNotifications)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ClientCode)
+                        </td>
+                        <td>
+                            @(item.ArchiveItems != null ? item.ArchiveItems.Count() : 0)
+                        </td>
+                        <td>
+                            <a asp-action="Notify" asp-route-id="@item.Id">Notify</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+
+<h2>Clients with 1 or more items past their renewal date:</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Client Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClientCode)
+                Client Code
             </th>
             <th>
                 Number Overdue
@@ -22,7 +65,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.clientsWithOverdueItems) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -34,7 +77,6 @@
                 @(item.ArchiveItems != null ? item.ArchiveItems.Count() : 0)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Notify" asp-route-id="@item.Id">Notify</a>
             </td>
         </tr>

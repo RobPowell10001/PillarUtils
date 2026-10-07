@@ -37,12 +37,14 @@ namespace PillarUtils.Models
         public DateTime? SourceDate { get; set; } = null;
         public bool FileChecked { get; set; } = false;
         public bool NotificationSent { get; set; } = false;
+        public DateTime? NotificationDate { get; set; } = null;
         public DateTime? RenewalDate { get; set; } = null;
         public bool ReadyToDelete { get; set; } = false;
         public bool isDeleted { get; set; } = false;
         public string Format { get; set; } = string.Empty;
         public string Codec { get; set; } = string.Empty;
         public string Duration { get; set; } = string.Empty;
+        public int timesNotified { get; set; } = 0;
 
         [ForeignKey("Client")]
         public int ClientId { get; set; }

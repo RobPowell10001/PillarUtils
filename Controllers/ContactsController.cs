@@ -83,6 +83,8 @@ namespace PillarUtils.Controllers
                 return NotFound();
             }
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", contact.ClientId);
+
+            ViewBag.ReturnUrl = Request.Headers["Referer"].ToString();
             return View(contact);
         }
 
@@ -91,12 +93,20 @@ namespace PillarUtils.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,AvazaUserId,JobTitle,Email,MobilePhone,WorkPhone,BillingAddress,Comments,ClientId")] Contact contact)
+        public async Task<IActionResult> Edit(int id, string returnUrl, [Bind("Id,FirstName,LastName,AvazaUserId,JobTitle,Email,MobilePhone,WorkPhone,BillingAddress,Comments,ClientId")] Contact contact)
         {
             if (id != contact.Id)
             {
                 return NotFound();
             }
+
+            contact.AvazaUserId ??= string.Empty;
+            contact.JobTitle ??= string.Empty;
+            contact.Email ??= string.Empty;
+            contact.MobilePhone ??= string.Empty;
+            contact.WorkPhone ??= string.Empty;
+            contact.BillingAddress ??= string.Empty;
+            contact.Comments ??= string.Empty;
 
             if (ModelState.IsValid)
             {
@@ -116,14 +126,19 @@ namespace PillarUtils.Controllers
                         throw;
                     }
                 }
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", contact.ClientId);
             return View(contact);
         }
 
-        // GET: Contacts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+    // GET: Contacts/Delete/5
+    public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {

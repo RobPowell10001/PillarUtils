@@ -2,7 +2,76 @@
 
 @{
     ViewData["Title"] = "Notify";
+
+    var today = DateTime.Today;
+    var responseDate = today.AddDays(7).ToString("MMMM d, yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+
+    var filesUpForRenewal = Model.ArchiveItems
+        .Where(a => a.RenewalDate <= today)
+        .OrderBy(a => a.RenewalDate)
+        .ThenBy(a => a.Name);
+
+    var otherFilesStored = Model.ArchiveItems
+        .Where(a => a.RenewalDate > today || a.RenewalDate == null)
+        .OrderBy(a => a.RenewalDate ?? DateTime.MaxValue)
+        .ThenBy(a => a.Name);
+
+    string FormatFile(ArchiveItem a) =>
+        $"Title: {a.Name} | " +
+        $"Source Date: {(a.SourceDate?.ToString("yyyy-MM-dd") ?? "—")} | " +
+        $"Renewal Date: {(a.RenewalDate?.ToString("yyyy-MM-dd") ?? "—")}";
+
+    var renewalSection = filesUpForRenewal.Any()
+    ? string.Join("\n", filesUpForRenewal.Select(FormatFile))
+    : "(None)";
+
+    var otherFilesSection = otherFilesStored.Any()
+        ? string.Join("\n", otherFilesStored.Select(FormatFile))
+        : "(None)";
+
+    var clipboardText =
+$@"Dear {Model.Name},
+
+Thank you for entrusting Pillar To Post with your broadcast masters over the years. It's been a privilege to be part of your production work, and we want to make sure your archived content continues to be handled in a way that works best for you.
+
+As part of your original broadcast delivery package, the archive agreement included three years of secure cloud storage for your HD master files. Please find attached a complete inventory of your archived content, including all files currently on file and their respective renewal dates.
+
+Some of your archived content has reached or is approaching the end of its agreed term, and we'd like to give you the opportunity to decide how you'd like to proceed. We'd appreciate your response by {responseDate}.
+
+You have three options:
+
+1. RENEW YOUR ARCHIVE
+Continue storing your files for another three years at the following rates:
+   • Episodes up to 30 minutes: $30 per episode
+   • Episodes 30 to 75 minutes: $60 per episode
+   • Episodes 75 to 210 minutes: $117 per episode
+
+2. DELETE YOUR FILES
+If you no longer need these files archived, we can securely delete them from our system at no charge. Please note this is a permanent and irreversible action — we want to make sure it's the right choice before proceeding.
+
+3. RETRIEVE YOUR FILES
+If you'd like your masters returned to you before we close out the archive, we can post your files to our secure FTP server for you to download at your convenience. If you prefer physical media, we can ship on hard drives — you would cover the cost of the drives and shipping. Retrieval rates are:
+   • Episodes up to 30 minutes: $10 per episode
+   • Episodes 30 to 75 minutes: $20 per episode
+   • Episodes 75 to 210 minutes: $39 per episode
+
+Please review the inventory below and let us know which option you'd like to select. You're also welcome to choose different options for different titles — for example, renewing some episodes while retrieving or deleting others.
+
+If we don't hear back from you by {responseDate}, we'll follow up before taking any action.
+
+Please don't hesitate to reach out with any questions — we're happy to walk through the options with you.
+
+With gratitude,
+
+Jim
+
+-- Files Up For Renewal --
+{renewalSection}
+
+-- Other Files Stored --
+{otherFilesSection}";
 }
+<textarea id="archiveClipboardText" hidden>@clipboardText</textarea>
 
 <h1>Notify</h1>
 
@@ -29,10 +98,23 @@
             @if (Model.Contacts != null && Model.Contacts.Any())
             {
                 <ul>
-                    @foreach (var contact in Model.Contacts)
+                    @foreach (var contact in Model.Contacts.OrderBy(a => a.LastName))
                     {
-                        <li>@contact.FirstName @contact.LastName (@contact.Email)</li>
+                        <li>@contact.FirstName @contact.LastName (@contact.Email) <a asp-controller="Contacts" asp-action="Edit" asp-route-id="@contact.Id">Edit</a></li>
                     }
+                    <li>
+                        <form asp-controller="Clients"
+                              asp-action="DuplicateLastContactAlphabetically"
+                              method="post">
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden" name="clientId" value="@Model.Id" />
+
+                            <button type="submit" class="btn btn-link p-0">
+                                Add New
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             }
             else
@@ -44,30 +126,88 @@
 
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="RenewalList">Back to Client List</a> | 
+    <a href="#"
+       onclick="copyTable(event)">
+        Copy Notification Email
+    </a>
 </div>
 
-<h4>Overdue Items</h4>
-@if (Model.ArchiveItems != null && Model.ArchiveItems.Cast<ArchiveItem>().Any())
+@if (Model.ArchiveItems != null && filesUpForRenewal.Cast<ArchiveItem>().Any())
 {
-    <h4 class="mt-4">Archive Items (@Model.ArchiveItems.Count())</h4>
+    
+    <form asp-action="NotifyAllOverdue" asp-controller="Clients" method="post">
+        <input type="hidden" name="clientId" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">
+            Mark All Overdue as Notified
+        </button>
+    </form>
+    <form asp-action="RenewAllOverdue" asp-controller="Clients" method="post">
+        <input type="hidden" name="clientId" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">
+            Renew All Overdue Items
+        </button>
+    </form>
+    <h4 class="mt-4">Overdue Items (@filesUpForRenewal.Count())</h4>
     <table class="table table-striped table-sm">
         <thead>
             <tr>
                 <th>Title</th>
+                <th>Duration</th>
+                <th>Format</th>
+                <th>File Format</th>
+                <th>Drive Name</th>
                 <th>Source Date</th>
                 <th>Renewal Date</th>
+                <th>Notified Date</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.ArchiveItems.OrderBy(a => a.RenewalDate).ThenBy(a => a.Name))
+            @foreach (var item in filesUpForRenewal.OrderBy(a => a.NotificationDate == null).ThenBy(a => a.NotificationDate).ThenBy(a => a.RenewalDate).ThenBy(a => a.Name))
             {
                 <tr>
                     <td>@item.Name</td>
+                    <td>@(item.Duration?.ToString() ?? "—")</td>
+                    <td>@(item.Format?.ToString() ?? "—")</td>
+                    <td>@(item.FileFormat?.ToString() ?? "—")</td>
+                    <td>@(item.DriveName?.ToString() ?? "—")</td>
                     <td>@(item.SourceDate?.ToString("yyyy-MM-dd") ?? "—")</td>
                     <td>@(item.RenewalDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                    <td>@(item.NotificationDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                    <td class="text-end">
+                        Quick Edit:
+                        <form asp-action="QuickEditArchiveItem" method="post">
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="fileChecked" value="true" @(item.FileChecked ? "checked" : "") /> File Checked
+                                </label>
+                            </div>
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="notificationSent" value="true" @(item.NotificationSent ? "checked" : "") /> Notification Sent
+                                </label>
+                            </div>
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="readyToDelete" value="true" @(item.ReadyToDelete ? "checked" : "") /> Ready To Delete
+                                </label>
+                            </div>
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="isDeleted" value="true" @(item.isDeleted ? "checked" : "") /> Is Deleted
+                                </label>
+                            </div>
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="renewUponSaving" value="true" /> Renew Upon Saving?
+                                </label>
+                            </div>
+                            <input type="hidden" name="clientId" value="@Model.Id" />
+                            <input type="hidden" name="archiveItemId" value="@item.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </form>
+                    </td>
                     <td class="text-end">
                         <a asp-controller="ArchiveItems" asp-action="Details" asp-route-id="@item.Id">View</a>
                         |
@@ -81,6 +221,20 @@
 else
 {
     <div class="alert alert-info mt-3">
-        No archive items for this client yet.
+        This Client has no overdue items.
     </div>
 }
+<script>
+    async function copyTable(event) {
+        event.preventDefault();
+
+        const text = document.getElementById("archiveClipboardText").value;
+
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("Copied email!");
+        } catch (err) {
+            console.error("Copy failed:", err);
+        }
+    }
+</script>
